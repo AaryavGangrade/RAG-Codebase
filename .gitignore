@@ -1,0 +1,11 @@
+# Secrets and environments
+.env
+
+# Local Database Files
+faiss_index.bin
+metadata.json
+
+# Python compilation files
+__pycache__/
+*.py[cod]
+*$py.class
