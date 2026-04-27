@@ -48,16 +48,20 @@ This repository is highly modularised for production environments:
 
 ## 💻 Usage Guide
 
-### 1. Indexing the Codebase
-Analyze and ingest all Python files in your target directory structure. This step generates a local `faiss_index.bin` database alongside chunk mapping metadata.
+### 1. Launch the Web Interface (Recommended)
+This system comes with an interactive Graphical UI where you can supply paths and effortlessly chat with the AI.
+```bash
+streamlit run app.py
+```
+
+### 2. Standard CLI Usage (Alternative)
+
+**Indexing:**
 ```bash
 python main.py --index .
 ```
 
-### 2. Querying the Codebase
-Ask natural language questions to interface with the codebase architecture directly:
+**Querying:**
 ```bash
 python main.py --query "Where is the retriever module implemented?"
-python main.py --query "Explain how the embedder gets its embeddings?"
-python main.py --query "Can you explain me the various subfolders created and what their uses are?"
 ```

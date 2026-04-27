@@ -2,3 +2,4 @@ google-generativeai
 faiss-cpu
 numpy
 python-dotenv
+streamlit
