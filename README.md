@@ -1,4 +1,4 @@
-# 🧠 Codebase Intelligence System using RAG
+# Codebase Intelligence System using RAG
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Gemini](https://img.shields.io/badge/Google%20Gemini-AI-orange.svg)
@@ -11,17 +11,17 @@ Unlike standard text-based RAGs, this tool is **AST-aware**. It intelligently pa
 
 ---
 
-## ✨ Features
+## Features
 
-- **🧠 AST-Aware Parsing**: Uses Python's built-in `ast` module to accurately identify logical code components and extract relationships (imports, line numbers).
-- **🔪 Smart Chunking**: Filters out trivial boilerplate (functions under 5 lines) to maintain a high-quality vector space.
-- **⚡ High-Performance Vector Retrieval**: Uses Meta's `FAISS` library for ultra-fast L2 similarity search over embedded code chunks.
-- **📈 Custom Reranking**: Applies a custom heuristic reranker based on keyword and metadata boosting to improve top-k accuracy.
-- **🤖 Grounded AI Responses**: Seamlessly integrates with Google's Gemini generation pipeline to provide highly accurate, codebase-specific explanations.
+- **AST-Aware Parsing**: Uses Python's built-in `ast` module to accurately identify logical code components and extract relationships (imports, line numbers).
+- **Smart Chunking**: Filters out trivial boilerplate (functions under 5 lines) to maintain a high-quality vector space.
+- **High-Performance Vector Retrieval**: Uses Meta's `FAISS` library for ultra-fast L2 similarity search over embedded code chunks.
+- **Custom Reranking**: Applies a custom heuristic reranker based on keyword and metadata boosting to improve top-k accuracy.
+- **Grounded AI Responses**: Seamlessly integrates with Google's Gemini generation pipeline to provide highly accurate, codebase-specific explanations.
 
 ---
 
-## 🏗️ Architecture Stack
+## Architecture Stack
 
 This repository is highly modularised for production environments:
 
@@ -32,7 +32,7 @@ This repository is highly modularised for production environments:
 
 ---
 
-## 🚀 Quick Setup
+## Quick Setup
 
 1. **Install dependencies**:
    ```bash
@@ -46,7 +46,7 @@ This repository is highly modularised for production environments:
 
 ---
 
-## 💻 Usage Guide
+## Usage Guide
 
 ### 1. Launch the Web Interface (Recommended)
 This system comes with an interactive Graphical UI where you can supply paths and effortlessly chat with the AI.
