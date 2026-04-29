@@ -1,23 +1,24 @@
-# Codebase Intelligence System using RAG
+# Codebase Intelligence System using Agentic Hybrid-Graph RAG
 
 ![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Gemini](https://img.shields.io/badge/Google%20Gemini-AI-orange.svg)
 ![FAISS](https://img.shields.io/badge/FAISS-Vector%20DB-green.svg)
-![RAG](https://img.shields.io/badge/Architecture-RAG-purple.svg)
+![NetworkX](https://img.shields.io/badge/NetworkX-Graph-blue.svg)
+![RAG](https://img.shields.io/badge/Architecture-Agentic%20RAG-purple.svg)
 
-A production-ready **Retrieval-Augmented Generation (RAG)** system designed specifically for analyzing and understanding Python codebases. 
+A production-ready **Agentic Retrieval-Augmented Generation (RAG)** system designed specifically for deep analysis and understanding of Python codebases. 
 
-Unlike standard text-based RAGs, this tool is **AST-aware**. It intelligently parses `functions`, `classes`, and `docstrings` preserving their boundaries instead of blindly splitting raw text. It leverages the latest **Google Gemini 2.5** intelligence to answer complex developer queries with precise file and code references.
+Unlike standard text-based RAGs, this tool is **AST-aware and Graph-augmented**. It parses your code, maps out execution dependencies, and allows a Gemini-powered Agent to autonomously search, read, and traverse your codebase to answer complex developer queries.
 
 ---
 
 ## Features
 
-- **AST-Aware Parsing**: Uses Python's built-in `ast` module to accurately identify logical code components and extract relationships (imports, line numbers).
-- **Smart Chunking**: Filters out trivial boilerplate (functions under 5 lines) to maintain a high-quality vector space.
-- **High-Performance Vector Retrieval**: Uses Meta's `FAISS` library for ultra-fast L2 similarity search over embedded code chunks.
-- **Custom Reranking**: Applies a custom heuristic reranker based on keyword and metadata boosting to improve top-k accuracy.
-- **Grounded AI Responses**: Seamlessly integrates with Google's Gemini generation pipeline to provide highly accurate, codebase-specific explanations.
+- **Agentic RAG Loop**: The LLM isn't just a passive reader. It acts as an autonomous agent equipped with a `search_codebase` tool, allowing it to perform multi-step retrieval to trace complex logic before answering.
+- **Hybrid Retrieval (Dense + Sparse)**: Combines Meta's `FAISS` for semantic vector search with `BM25` for exact-keyword matching. Results are merged using Reciprocal Rank Fusion (RRF) for unparalleled accuracy.
+- **Code Graph Expansion**: Extracts `ast.Call` nodes to build a `networkx` dependency graph. When a function is retrieved, the system automatically pulls its 1-hop callers and callees into the context window.
+- **Neural Reranking Pipeline**: Uses Gemini as an LLM-judge to rapidly score and rerank the top retrieved chunks (0-10) based on deep semantic relevance to the query.
+- **AST-Aware Parsing & Smart Chunking**: Uses Python's built-in `ast` module to accurately identify logical code components (filtering out trivial functions under 5 lines) to maintain a high-quality vector space.
 
 ---
 
@@ -25,10 +26,11 @@ Unlike standard text-based RAGs, this tool is **AST-aware**. It intelligently pa
 
 This repository is highly modularised for production environments:
 
-- `ingest/`: Abstract Syntax Tree parsing and smart chunking logic.
+- `ingest/`: Abstract Syntax Tree parsing, dependency extraction, and `networkx` graph building.
 - `embeddings/`: Interfaces with Google AI to vectorize code definitions.
-- `retrieval/`: Manages the FAISS index database and scoring heuristics.
-- `llm/`: Prompts and generation parameters for context-aware Q&A.
+- `retrieval/`: Manages the FAISS semantic index, BM25 sparse index, and neural reranking heuristics.
+- `llm/`: Contains the `CodebaseAgent` that orchestrates tool calling and multi-turn reasoning.
+- `app.py`: Streamlit frontend with direct ZIP upload and GitHub URL cloning capabilities.
 
 ---
 
@@ -49,7 +51,7 @@ This repository is highly modularised for production environments:
 ## Usage Guide
 
 ### 1. Launch the Web Interface (Recommended)
-This system comes with an interactive Graphical UI where you can supply paths and effortlessly chat with the AI.
+This system comes with an interactive Graphical UI where you can supply paths, upload ZIP files, or paste GitHub URLs and effortlessly chat with the AI.
 ```bash
 streamlit run app.py
 ```

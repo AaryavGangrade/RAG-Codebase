@@ -10,7 +10,7 @@ from ingest.chunker import CodeChunker
 from embeddings.embedder import Embedder
 from retrieval.retriever import Retriever
 from retrieval.reranker import Reranker
-from llm.prompt import LLMResponder
+from llm.prompt import CodebaseAgent
 
 st.set_page_config(page_title="RAG Codebase Intelligence", layout="centered", page_icon="🧠")
 
@@ -38,6 +38,8 @@ def process_codebase(source_dir, repo_name):
         if not chunks:
             st.error(f"Found {len(parsed_items)} items in {repo_name}, but none were long enough to chunk (e.g. functions < 5 lines).")
             return
+
+        chunker.build_graph(chunks)
 
         embedder = Embedder()
         embedded_chunks = embedder.embed_chunks(chunks)
@@ -121,23 +123,45 @@ if prompt := st.chat_input("Ask a question about the indexed codebase..."):
             st.markdown(prompt)
             
         with st.chat_message("assistant"):
-            with st.spinner("Searching the latent space and generating insights..."):
-                retriever = Retriever()
-                raw_results = retriever.search(prompt, top_k=5)
+            with st.spinner("Agent is actively searching and analyzing the codebase..."):
                 
-                reranker = Reranker()
-                best_results = reranker.rerank(prompt, raw_results)
-                
-                llm = LLMResponder()
-                response_text = llm.generate_response(prompt, best_results)
+                # Define the tool inside the block so it can access session state
+                def search_codebase(search_query: str) -> str:
+                    """Searches the codebase, semantic embeddings, and code graph for context related to the query."""
+                    retriever = Retriever()
+                    raw_results = retriever.search(search_query, top_k=5)
+                    
+                    reranker = Reranker()
+                    best_results = reranker.rerank(search_query, raw_results)
+                    
+                    if "last_retrieved" not in st.session_state:
+                        st.session_state.last_retrieved = []
+                    
+                    # Accumulate all retrieved chunks so we can display them
+                    st.session_state.last_retrieved.extend(best_results)
+                    
+                    context_str = "\n\n".join([f"--- CHUNK {i+1} ---\nName: {c.get('name')}\nType: {c.get('type')}\nCode:\n{c.get('code')}" for i, c in enumerate(best_results)])
+                    return context_str
+
+                st.session_state.last_retrieved = []
+                agent = CodebaseAgent(search_tool=search_codebase)
+                response_text = agent.generate_response(prompt)
             
             st.markdown(response_text)
             
             # Show chunks retrieved in a neat collapsible dropdown
-            with st.expander("View Retrieved Context & Files"):
-                for res in best_results:
-                    st.markdown(f"📄 **[{res['type'].upper()}] {res['name']}** - `{res.get('file', 'N/A')}`")
+            if hasattr(st.session_state, 'last_retrieved') and st.session_state.last_retrieved:
+                # Deduplicate for UI
+                seen_names = set()
+                unique_results = []
+                for res in st.session_state.last_retrieved:
+                    if res.get('name') not in seen_names:
+                        seen_names.add(res.get('name'))
+                        unique_results.append(res)
+                        
+                with st.expander(f"View Retrieved Context ({len(unique_results)} chunks)"):
+                    for res in unique_results:
+                        st.markdown(f"📄 **[{res.get('type', 'unknown').upper()}] {res.get('name', '')}** - `{res.get('file', 'N/A')}`")
                     
         # Append assistant role
         st.session_state.messages.append({"role": "assistant", "content": response_text})
-

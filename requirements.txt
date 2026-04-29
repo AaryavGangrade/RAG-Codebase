@@ -3,3 +3,5 @@ faiss-cpu
 numpy
 python-dotenv
 streamlit
+rank-bm25
+networkx

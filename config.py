@@ -9,4 +9,6 @@ class Config:
     EMBEDDING_MODEL = "models/gemini-embedding-2"
     LLM_MODEL = "models/gemini-2.5-flash"
     VECTOR_DB_PATH = "faiss_index.bin"
+    BM25_PATH = "bm25_index.pkl"
+    GRAPH_PATH = "code_graph.pkl"
     METADATA_PATH = "metadata.json"

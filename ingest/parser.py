@@ -15,7 +15,17 @@ class CodebaseParser:
             elif isinstance(n, ast.ImportFrom):
                 if n.module:
                     imports.append(n.module)
-        return imports
+        return list(set(imports))
+
+    def _extract_calls(self, node: ast.AST) -> List[str]:
+        calls = []
+        for n in ast.walk(node):
+            if isinstance(n, ast.Call):
+                if isinstance(n.func, ast.Name):
+                    calls.append(n.func.id)
+                elif isinstance(n.func, ast.Attribute):
+                    calls.append(n.func.attr)
+        return list(set(calls))
 
     def parse_file(self, filepath: str) -> List[Dict]:
         with open(filepath, "r", encoding="utf-8") as f:
@@ -38,6 +48,7 @@ class CodebaseParser:
                 "code": source,
                 "docstring": module_docstring,
                 "imports": imports,
+                "calls": self._extract_calls(tree),
                 "start_line": 1,
                 "end_line": len(source.splitlines())
             })
@@ -55,6 +66,7 @@ class CodebaseParser:
                     "code": func_code,
                     "docstring": docstring or "",
                     "imports": imports,
+                    "calls": self._extract_calls(node),
                     "start_line": node.lineno,
                     "end_line": node.end_lineno
                 })
@@ -70,6 +82,7 @@ class CodebaseParser:
                     "code": class_code,
                     "docstring": docstring or "",
                     "imports": imports,
+                    "calls": self._extract_calls(node),
                     "start_line": node.lineno,
                     "end_line": node.end_lineno
                 })
